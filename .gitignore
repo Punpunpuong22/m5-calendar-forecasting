@@ -1,0 +1,27 @@
+# Dữ liệu M5: KHÔNG đưa lên GitHub (giấy phép Kaggle)
+data/*
+!data/.gitkeep
+*.csv
+*.csv.gz
+*.parquet
+*.pkl
+*.zip
+*.h5
+*.keras
+results/*
+!results/.gitkeep
+
+# Bí mật
+kaggle.json
+.env
+
+# Python / Jupyter
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Hệ điều hành / IDE
+.DS_Store
+.vscode/
+.idea/
