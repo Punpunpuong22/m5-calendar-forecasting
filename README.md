@@ -27,51 +27,49 @@ Bảng dài 194.100 dòng; bỏ 35.014 dòng mặt hàng chưa lên kệ (chưa 
 
 **Đánh giá:** WAPE, MAE, RMSE, RMSSE, Bias; phân tích sai số theo loại ngày (ngày thường, cuối tuần, trước sự kiện, sự kiện khác, ngày lễ); độ dao động của LSTM qua 3 seed; **thời gian huấn luyện** của từng lần huấn luyện (notebook v4).
 
-## 2. Kết quả trên tập kiểm tra (notebook v2)
+## 2. Kết quả trên tập kiểm tra (notebook v4, Colab GPU T4)
 
-| Mô hình | WAPE (%) |
-| --- | ---: |
-| Naive | 74,12 |
-| Seasonal Naive | 76,08 |
-| MA28 | 64,90 |
-| LightGBM-A | 61,68 |
-| LightGBM-B | 59,63 |
-| **LightGBM-C** | **59,57** |
-| LSTM-A | 61,13 |
-| LSTM-B | 60,63 |
-| LSTM-C | 60,67 |
-
-Độ lệch chuẩn WAPE của LSTM qua 3 seed: 0,26 / 0,26 / 0,38 điểm phần trăm (A / B / C).
-
-Trên các ngày lễ/sự kiện, WAPE của LightGBM giảm từ 69,72% (bộ A) xuống 63,03% (bộ C).
-
-**Tóm tắt:** khi chỉ có lịch sử bán (bộ A), LSTM có WAPE và MAE thấp hơn LightGBM (61,13% so với 61,68%), tức mạng hồi quy tự học được nhịp nhu cầu từ chuỗi; RMSE thì LightGBM thấp hơn (2,1667 so với 2,1830). Khi thêm lịch (bộ B), LightGBM giảm WAPE 2,05 điểm và vượt LSTM, còn LSTM chỉ giảm 0,50 điểm. SNAP và giá (bộ C) gần như không thay đổi kết quả ở tầm 1 ngày.
-
-### Thời gian huấn luyện (notebook v4)
-
-Thời gian không dùng để xếp hạng mô hình nhanh hay chậm, mà để kiểm tra xem huấn luyện lâu hơn có mua được độ chính xác hơn không.
-
-| Bộ | LSTM: thời gian 3 seed (CPU Colab, notebook v2) | LSTM: epoch theo seed | LightGBM: thời gian 3 cấu hình |
+| Mô hình | WAPE (%) | MAE | RMSE |
 | --- | ---: | ---: | ---: |
-| A | 4.379 giây (1.577 / 1.241 / 1.561) | 40 / 32 / 40 | chạy notebook v4 để đo |
-| B | 3.382 giây (1.379 / 882 / 1.121) | 36 / 23 / 29 | chạy notebook v4 để đo |
-| C | 2.923 giây (1.250 / 661 / 1.012) | 32 / 17 / 26 | chạy notebook v4 để đo |
+| Naive | 74,12 | 1,4456 | 2,9468 |
+| Seasonal Naive | 76,08 | 1,4838 | 2,8878 |
+| MA28 | 64,90 | 1,2658 | 2,4793 |
+| LightGBM-A | 61,68 | 1,2031 | 2,1667 |
+| LightGBM-B | 59,63 | 1,1630 | 2,0905 |
+| **LightGBM-C** | **59,57** | **1,1618** | 2,0909 |
+| LSTM-A | 61,15 | 1,1927 | 2,1850 |
+| LSTM-B | 60,67 | 1,1834 | 2,1751 |
+| LSTM-C | 60,58 | 1,1817 | 2,1620 |
 
-Notebook v2 không bấm giờ LightGBM; notebook v4 bấm giờ cả hai mô hình trên cùng một runtime và lưu `training_time_summary.csv`, `fig_time_vs_wape.png`.
+Độ lệch chuẩn WAPE của LSTM qua 3 seed: 0,28 / 0,24 / 0,47 điểm phần trăm (A / B / C). Trên các ngày lễ, WAPE của LightGBM giảm từ 69,72% (bộ A) xuống 63,03% (bộ C).
+
+**Tóm tắt:** khi chỉ có lịch sử bán (bộ A), LSTM có WAPE và MAE thấp hơn LightGBM (61,15% so với 61,68%), tức mạng hồi quy tự học được nhịp nhu cầu từ chuỗi; RMSE thì LightGBM thấp hơn. Khi thêm lịch (bộ B), LightGBM giảm WAPE 2,05 điểm và vượt LSTM khoảng 1 điểm, còn LSTM chỉ giảm 0,48 điểm. SNAP và giá (bộ C) gần như không thay đổi kết quả ở tầm 1 ngày.
+
+### Thời gian huấn luyện
+
+Thời gian không dùng để xếp hạng mô hình nhanh hay chậm, mà để kiểm tra xem huấn luyện lâu hơn có mua được độ chính xác hơn không. Lần chạy notebook v4: Colab GPU T4, 2 lõi CPU; LightGBM chạy trên CPU, LSTM chạy trên GPU. Mỗi mô hình cần 3 lần huấn luyện cho mỗi bộ (3 cấu hình hoặc 3 seed).
+
+| Bộ | LightGBM: tổng 3 lần | LSTM GPU T4: tổng 3 seed | LSTM / LightGBM | LSTM CPU (notebook v2) | WAPE LightGBM / LSTM |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| A | 9,1 giây | 463,6 giây | 50,8 lần | 4.379 giây | 61,68 / 61,15 |
+| B | 20,1 giây | 380,1 giây | 18,9 lần | 3.382 giây | 59,63 / 60,67 |
+| C | 23,4 giây | 316,6 giây | 13,5 lần | 2.923 giây | 59,57 / 60,58 |
+
+LSTM tốn thời gian gấp 13,5–50,8 lần nhưng chỉ chính xác hơn khi chưa có lịch; cùng mạng LSTM chạy trên GPU nhanh hơn CPU khoảng 9 lần mà WAPE chỉ lệch tối đa 0,09 điểm.
 
 ## 3. Cấu trúc repo
 
 ```
 notebooks/
-  m5_calendar_aware_lightgbm_lstm_v4.ipynb   # bản dùng cho báo cáo cuối kỳ: v2 + đo thời gian huấn luyện, bỏ kiểm định DM
-  m5_calendar_aware_lightgbm_lstm_v2.ipynb   # bản đã chạy, giữ nguyên kết quả (số liệu ở mục 2)
+  m5_calendar_aware_lightgbm_lstm_v4.ipynb   # bản đã chạy dùng cho báo cáo cuối kỳ (GPU T4): v2 + đo thời gian huấn luyện
+  m5_calendar_aware_lightgbm_lstm_v2.ipynb   # lần chạy trước trên CPU, dùng làm đối chứng thời gian
   m5_calendar_value_lightgbm_lstm_v3.ipynb   # v2 + mục 16: thí nghiệm bổ sung (tùy chọn)
 src/m5cal/timing.py                          # đo thời gian huấn luyện, bảng thời gian × độ chính xác
 src/m5cal/supplementary.py                   # độ đo, bootstrap khối tuần, permutation importance (dùng cho v3)
 tests/                                       # kiểm thử trên dữ liệu giả lập (không cần M5)
 ```
 
-Notebook v4 thêm mục 12.5 *Training time and accuracy*: bấm giờ từng lần huấn luyện LightGBM (3 cấu hình × 3 bộ) và LSTM (3 seed × 3 bộ) bằng `time.perf_counter()`, ghi riêng thời gian dự báo, in cấu hình phần cứng, rồi đặt thời gian cạnh WAPE/MAE/RMSE. Mã trong ô cấu hình chép nguyên văn từ `timing.py`. Muốn chỉ đo LightGBM nhanh, chạy từ mục 0 đến hết mục 10; toàn bộ notebook mất khoảng 3 giờ trên CPU, chủ yếu do LSTM (9 lần huấn luyện).
+Notebook v4 thêm mục 12.5 *Training time and accuracy*: bấm giờ từng lần huấn luyện LightGBM (3 cấu hình × 3 bộ) và LSTM (3 seed × 3 bộ) bằng `time.perf_counter()`, ghi riêng thời gian dự báo, in cấu hình phần cứng, rồi đặt thời gian cạnh WAPE/MAE/RMSE. Mã trong ô cấu hình chép nguyên văn từ `timing.py`. Muốn chỉ đo LightGBM nhanh, chạy từ mục 0 đến hết mục 10; 9 lần huấn luyện LSTM mất khoảng 20 phút trên GPU T4 và khoảng 3 giờ trên CPU.
 
 ## 4. Cách chạy
 
